@@ -8,32 +8,11 @@ import com.fakhrulasa.accountathenticator.LoginActivity
 import com.fakhrulasa.accountathenticator.MainActivity
 import com.fakhrulasa.accountathenticator.authjava.AccountHelper
 
-/**
- * Class Name: AccountAuthenticator
- * Description: Class that extends AbstractAccountAuthenticator
- */
-class AccountAuthenticator     //endregion
-//region Constructor
-    (  //region Private Variables
+class AccountAuthenticator (
     private val _context: Context
 ) :
     AbstractAccountAuthenticator(_context) {
-    //endregion
-    //region Overrides
-    /**
-     * Called from the system to add an account of the specified accountType.
-     * Invokes the Application's registration UI, which will create the account explicitly.
-     * @param response The response to send the result back to the AccountManager, will never be null.
-     * @param accountType The type of account to add, will never be null (defined in authenticator.xml).
-     * @param authTokenType The type of auth token to retrieve after adding the account, may be null.
-     * @param requiredFeatures A String array of authenticator-specific features that the added account must support, may be null.
-     * @param options A Bundle of authenticator-specific options, may be null.
-     * @return a Bundle result or null if the result is to be returned via the response. The result will contain either:
-     * KEY_INTENT, or
-     * KEY_ACCOUNT_NAME and KEY_ACCOUNT_TYPE of the account that was added, or
-     * KEY_ERROR_CODE and KEY_ERROR_MESSAGE to indicate an error
-     * @throws NetworkErrorException
-     */
+
     @Throws(NetworkErrorException::class)
     override fun addAccount(
         response: AccountAuthenticatorResponse,
@@ -42,16 +21,13 @@ class AccountAuthenticator     //endregion
         requiredFeatures: Array<String>,
         options: Bundle
     ): Bundle {
-        val METHOD_TAG: String
-        METHOD_TAG = CLASS_TAG + ".addAccount()"
-        val intent: Intent
-        val bundle: Bundle
-        intent = Intent(_context, MainActivity::class.java)
+
+        val intent: Intent = Intent(_context, MainActivity::class.java)
         intent.putExtra(AccountHelper.ARG_ACCOUNT_TYPE, accountType)
         intent.putExtra(AccountHelper.ARG_AUTH_TYPE, authTokenType)
         intent.putExtra(AccountHelper.ARG_IS_ADDING_NEW_ACCOUNT, true)
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
-        bundle = Bundle()
+        val bundle: Bundle = Bundle()
         bundle.putParcelable(AccountManager.KEY_INTENT, intent)
         return bundle
     }
@@ -73,30 +49,23 @@ class AccountAuthenticator     //endregion
         account: Account,
         options: Bundle
     ): Bundle {
-        val METHOD_TAG: String
-        METHOD_TAG = CLASS_TAG + ".confirmCredentials()"
-        if (options != null && options.containsKey(AccountManager.KEY_PASSWORD)) {
-            val passwordEntered: String?
-            passwordEntered = options.getString(AccountManager.KEY_PASSWORD)
-            val accountPassword: String
-            accountPassword = AccountHelper.getInstance(_context).getPassword(account)
-            val bValid: Boolean
-            bValid = passwordEntered == accountPassword
-            val bundle: Bundle
-            bundle = Bundle()
+
+        if (options.containsKey(AccountManager.KEY_PASSWORD)) {
+            val passwordEntered: String? = options.getString(AccountManager.KEY_PASSWORD)
+            val accountPassword: String = AccountHelper.getInstance(_context).getPassword(account)
+            val bValid: Boolean = passwordEntered == accountPassword
+            val bundle: Bundle = Bundle()
             bundle.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, bValid)
             return bundle
         }
 
         // Launch UserLogin to confirm credentials. This will be the case if confirmCredentials is called from elsewhere besides the UserLogin Activity
-        val intent: Intent
-        intent = Intent(_context, LoginActivity::class.java)
+        val intent: Intent = Intent(_context, LoginActivity::class.java)
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
         intent.putExtra(AccountHelper.ARG_ACCOUNT_NAME, account.name)
         intent.putExtra(AccountHelper.ARG_ACCOUNT_TYPE, account.type)
         intent.putExtra(AccountHelper.ARG_CONFIRMCREDENTIALS, true)
-        val bundle: Bundle
-        bundle = Bundle()
+        val bundle: Bundle = Bundle()
         bundle.putParcelable(AccountManager.KEY_INTENT, intent)
         return bundle
     }

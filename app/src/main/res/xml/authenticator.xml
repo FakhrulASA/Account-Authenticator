@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
-    android:accountType="com.fakhrulasa.accountmanagement"
+    android:accountType="com.fakhrulasa.accountathenticator"
     android:icon="@drawable/ic_launcher_background"
     android:label="FakhrulAsa"
     android:smallIcon="@drawable/ic_launcher_background" />

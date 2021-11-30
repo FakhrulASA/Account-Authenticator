@@ -16,8 +16,8 @@ import java.io.IOException
  */
 class AccountHelper private constructor(c: Context) {
     //region Private Variables
-    private var _accountManager: AccountManager? = null
-    private var _context: Context? = null
+    private var accountManager: AccountManager? = null
+    private var context: Context? = null
     //endregion
     //region Public Methods
     /**
@@ -31,12 +31,12 @@ class AccountHelper private constructor(c: Context) {
      */
     fun addAccountExplicitly(account: Account?, password: String?, userdata: Bundle?): Boolean {
 
-        val bAdded: Boolean = _accountManager!!.addAccountExplicitly(account, password, userdata)
+        val bAdded: Boolean = accountManager!!.addAccountExplicitly(account, password, userdata)
         if (bAdded) {
-            val toast = Toast.makeText(_context, "Acc created", Toast.LENGTH_LONG)
+            val toast = Toast.makeText(context, "Acc created", Toast.LENGTH_LONG)
             toast.show()
         } else {
-            val toast = Toast.makeText(_context, "Acc not created", Toast.LENGTH_LONG)
+            val toast = Toast.makeText(context, "Acc not created", Toast.LENGTH_LONG)
             toast.show()
         }
         return bAdded
@@ -50,7 +50,7 @@ class AccountHelper private constructor(c: Context) {
      */
     fun accountExists(): Boolean {
         val bAccountExists: Boolean
-        val availableAccounts: Array<Account> = _accountManager!!.getAccountsByType(ACCOUNT_TYPE)
+        val availableAccounts: Array<Account> = accountManager!!.getAccountsByType(ACCOUNT_TYPE)
         bAccountExists = availableAccounts.isNotEmpty()
         if (bAccountExists) {
             //acc exist
@@ -70,7 +70,7 @@ class AccountHelper private constructor(c: Context) {
     val account: Account?
         get() {
 
-            val availableAccounts: Array<Account> = _accountManager!!.getAccountsByType(ACCOUNT_TYPE)
+            val availableAccounts: Array<Account> = accountManager!!.getAccountsByType(ACCOUNT_TYPE)
             return if (availableAccounts.isNotEmpty()) {
                 val account: Account = availableAccounts[0]
                 Log.d("Triggering Auth: ", "Account found. Name: " + account.name)
@@ -92,7 +92,7 @@ class AccountHelper private constructor(c: Context) {
     fun getPassword(account: Account): String? {
 
         Log.d("Triggering Auth: ", "Getting Password for Account: " + account.name)
-        val password: String? = _accountManager!!.getPassword(account)
+        val password: String? = accountManager!!.getPassword(account)
         if (password != null && password.isNotEmpty()) Log.d(
             "Triggering Auth: ",
             "Password found for Account: " + account.name
@@ -117,7 +117,7 @@ class AccountHelper private constructor(c: Context) {
             // No Account.  Could have been deleted.  Should not happen, but if it does,
             // App will show UserRegistration Activity.
             Log.d("Triggering Auth: ", "No Accounts found.")
-            val toast = Toast.makeText(_context, "No acc", Toast.LENGTH_SHORT)
+            val toast = Toast.makeText(context, "No acc", Toast.LENGTH_SHORT)
             toast.show()
             return false
         }
@@ -125,7 +125,7 @@ class AccountHelper private constructor(c: Context) {
 
             // No Account for the user name provided.
             Log.d("Triggering Auth: ", "No Account found for user: $userName")
-            val toast = Toast.makeText(_context, "No acc for user", Toast.LENGTH_SHORT)
+            val toast = Toast.makeText(context, "No acc for user", Toast.LENGTH_SHORT)
             toast.show()
             return false
         }
@@ -160,8 +160,7 @@ class AccountHelper private constructor(c: Context) {
         Log.d("Triggering Auth: ", "Getting Auth Token.")
 
         //android.os.Debug.waitForDebugger();
-        val future: AccountManagerFuture<Bundle>
-        future = _accountManager!!.getAuthToken(
+        val future: AccountManagerFuture<Bundle> = accountManager!!.getAuthToken(
             account,
             authTokenType,
             options,
@@ -199,7 +198,7 @@ class AccountHelper private constructor(c: Context) {
             "Triggering Auth: ",
             "Attempting to get Auth Token type: " + authTokenType + " for Account: " + account.name
         )
-        val authToken: String? = _accountManager!!.peekAuthToken(account, authTokenType)
+        val authToken: String? = accountManager!!.peekAuthToken(account, authTokenType)
         if (authToken != null && authToken.isNotEmpty()) Log.d(
             "Triggering Auth: ",
             "Auth Token type: " + authTokenType + " found for Account: " + account.name
@@ -220,7 +219,7 @@ class AccountHelper private constructor(c: Context) {
     fun setAuthToken(account: Account, authTokenType: String?, authToken: String?) {
 
         Log.d("Triggering Auth: ", "Attempting to set Auth Token for Account: " + account.name)
-        _accountManager!!.setAuthToken(account, authTokenType, authToken)
+        accountManager!!.setAuthToken(account, authTokenType, authToken)
         Log.d("Triggering Auth: ", "Auth Token set for Account: " + account.name)
     }
 
@@ -234,7 +233,7 @@ class AccountHelper private constructor(c: Context) {
     fun invalidateAuthToken(accountType: String?, authToken: String?) {
 
         Log.d("Triggering Auth: ", "Invalidating Auth Token.")
-        _accountManager!!.invalidateAuthToken(accountType, authToken)
+        accountManager!!.invalidateAuthToken(accountType, authToken)
         Log.d("Triggering Auth: ", "Auth Token invalidated.")
     }
 
@@ -253,7 +252,7 @@ class AccountHelper private constructor(c: Context) {
         val account: Account? = this.account
         val options: Bundle = Bundle()
         options.putString(AccountManager.KEY_PASSWORD, password)
-        return _accountManager!!.confirmCredentials(account, options, null, null, null)
+        return accountManager!!.confirmCredentials(account, options, null, null, null)
     } //endregion
 
     companion object {
@@ -270,7 +269,7 @@ class AccountHelper private constructor(c: Context) {
         /**
          * Account type id
          */
-        const val ACCOUNT_TYPE = "com.fakhrulasa.accountmanagement"
+        const val ACCOUNT_TYPE = "com.fakhrulasa.accountathenticator"
         const val ARG_ACCOUNT_TYPE = "ACCOUNT_TYPE"
         const val ARG_AUTH_TYPE = "AUTH_TYPE"
         const val ARG_IS_ADDING_NEW_ACCOUNT = "IS_ADDING_ACCOUNT"
@@ -292,6 +291,7 @@ class AccountHelper private constructor(c: Context) {
 
         //endregion
         //region Singleton Implementation (not thread safe)
+        @SuppressLint("StaticFieldLeak")
         private var _instance: AccountHelper? = null
 
         /**
@@ -314,7 +314,7 @@ class AccountHelper private constructor(c: Context) {
      * @param c Application Context
      */
     init {
-        _accountManager = AccountManager.get(c)
-        _context = c
+        accountManager = AccountManager.get(c)
+        context = c
     }
 }

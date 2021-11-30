@@ -5,9 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 
 import android.widget.EditText
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import android.content.Intent
 import android.accounts.AccountAuthenticatorActivity
 
@@ -16,22 +13,31 @@ import android.app.Activity
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import com.fakhrulasa.accountathenticator.authentication.AccountHelper
+import kotlinx.coroutines.*
 
  class MainActivity : AppCompatActivity() {
     lateinit var userNameET:EditText
     lateinit var buttonGO:Button
     lateinit var passwordET:EditText
+    lateinit var textaccname:TextView
     var authToken="29012A"
      val ARG_ACCOUNT_TYPE = "accountType"
      val ARG_AUTH_TOKEN_TYPE = "authTokenType"
      val ARG_IS_ADDING_NEW_ACCOUNT = "isAddingNewAccount"
      val PARAM_USER_PASSWORD = "password"
+
+     var acc:String=""
      private lateinit var mAccountManager: AccountManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        mAccountManager= AccountManager.get(this)
+        textaccname=findViewById(R.id.textaccname)
+        var list: Array<out Account> = mAccountManager.accounts
+
         buttonGO=findViewById(R.id.button)
         userNameET=findViewById(R.id.editTextTextPersonUserName)
         passwordET=findViewById(R.id.editTextTextPersonUserPassword)
@@ -43,20 +49,20 @@ import com.fakhrulasa.accountathenticator.authentication.AccountHelper
 
      //endregion
      //region Event Handlers
-     fun goButton() {
+     private fun goButton() {
 
 
          // Check to see if an Account has already been created.  If so, notify the user and return.
          // This check is here in the event the UI is presented via the Settings applet.
-         if (AccountHelper.getInstance(this)?.accountExists() == true) {
-             val toast: Toast = Toast.makeText(
-                 this,
-                 "Already exist",
-                 Toast.LENGTH_SHORT
-             )
-             toast.show()
-             return
-         }
+//         if (AccountHelper.getInstance(this)?.accountExists() == true) {
+//             val toast: Toast = Toast.makeText(
+//                 this,
+//                 "Already exist",
+//                 Toast.LENGTH_SHORT
+//             )
+//             toast.show()
+//             return
+//         }
 
          //
          // Validate the user name.
@@ -96,7 +102,7 @@ import com.fakhrulasa.accountathenticator.authentication.AccountHelper
          // Set the Account Type string.
          var accountType: String?
          accountType = this.intent.getStringExtra(AccountHelper.ARG_ACCOUNT_TYPE)
-         if (accountType == null || accountType.length == 0) {
+         if (accountType == null || accountType.isEmpty()) {
              accountType = AccountHelper.ACCOUNT_TYPE
          }
 
@@ -114,14 +120,13 @@ import com.fakhrulasa.accountathenticator.authentication.AccountHelper
              // Set the Auth Token
              var authTokenType: String?
              authTokenType = intent.getStringExtra(AccountHelper.ARG_AUTH_TYPE)
-             if (authTokenType == null || authTokenType.length == 0) authTokenType =
+             if (authTokenType == null || authTokenType.isEmpty()) authTokenType =
                  AccountHelper.AUTHTOKEN_TYPE_FULL_ACCESS
              AccountHelper.getInstance(this)
                  ?.setAuthToken(account, authTokenType, AccountHelper.AUTH_TOKEN)
 
              // Create the Intent to start the Application Home Activity
-             val intent: Intent
-             intent = Intent(this, LoginActivity::class.java)
+             val intent: Intent = Intent(this, LoginActivity::class.java)
              intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, userName)
              intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, accountType)
              this.setResult(RESULT_OK, intent)
@@ -129,7 +134,7 @@ import com.fakhrulasa.accountathenticator.authentication.AccountHelper
          } else {
 
              // Failed to add account.
-             Log.e("Validating :", "Account $userName was not added to Android Account Manager.")
+
              null
          }
      }
