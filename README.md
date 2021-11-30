@@ -10,3 +10,6 @@
 5. Get an Auth Token from the AccountManager's cache for a given Account type
 6. Add an auth token to the AccountManager cache for an account.
 7. Invalidate an auth token to the AccountManager cache for an account.
+
+### Reference
+#### Google AccountManager: https://developer.android.com/reference/android/accounts/AccountManager
